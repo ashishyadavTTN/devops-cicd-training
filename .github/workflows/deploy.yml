@@ -1,4 +1,4 @@
-name: CI/CD Deploy to S3 and CloudFront
+name: CI/CD Deploy to S3
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -17,6 +18,7 @@ jobs:
   build-and-deploy:
     needs: test
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -35,9 +37,3 @@ jobs:
 
       - name: Deploy to S3
         run: aws s3 sync build/ s3://${{ secrets.S3_BUCKET_NAME }} --delete
-
-      - name: Invalidate CloudFront cache
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
-            --paths "/*"
